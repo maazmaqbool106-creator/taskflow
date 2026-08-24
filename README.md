@@ -1,135 +1,422 @@
 # TaskFlow — React Native Task Manager 🚀
 
-TaskFlow is a production-quality, portfolio-grade Task Management mobile application built with **React Native**, **Expo**, **TypeScript**, and **React Navigation**. It is designed with clean architectural practices, local storage persistence, responsive styling, and complete system-dark/light theme synchronization.
+TaskFlow is a full-stack task management mobile application built with **React Native, Expo, TypeScript, Node.js, Express.js, and MongoDB Atlas**.
 
-Designed for maximum performance and fluid animations, TaskFlow provides a comprehensive overview of tasks categorized by life domains, paired with high-quality productivity metrics.
+The application allows users to manage their tasks through a modern mobile interface while communicating with a RESTful backend for task data and authentication.
 
----
+## 📱 Overview
 
-## 🎨 Visual Preview
+TaskFlow provides a clean productivity-focused interface for creating, managing, searching, and tracking tasks.
 
-> [!NOTE]
-> *App Icon & Interface Design: Custom modern checkmark symbol overlaying flat abstract task list cards on a rich violet-indigo gradient background matching the app's visual guidelines.*
+The project was built to practice and demonstrate **mobile application development, REST API integration, backend development, database management, authentication, and full-stack application architecture**.
 
-```
-+-------------------------------------------------------------+
-|                                                             |
-|                       [ SCREENSHOTS ]                       |
-|   (Placeholder for HomeScreen, DetailsScreen, AddTaskScreen,  |
-|         ExploreScreen in Light and Dark theme configurations)    |
-|                                                             |
-+-------------------------------------------------------------+
-```
+## ✨ Features
 
----
+### 📋 Task Management
 
-## 🔥 Features
+- Create new tasks
+- View task details
+- Edit existing tasks
+- Delete tasks
+- Mark tasks as completed
+- Task categories
+- Task priorities
+- Task descriptions
+- Due dates
 
-- 📱 **Robust Task CRUD:** Add, view, edit, and delete tasks with instant feedback.
-- ⚡ **Instant Completion Toggle:** Toggle task status directly from the task list with haptic touch feedback.
-- 📆 **Custom Calendar Date Picker:** Fully stylized, high-fidelity grid calendar selector supporting custom date assignments.
-- 🧭 **Dashboard Overview:** Displays today's task statistics (Pending, Completed, Overdue), dynamic time-sensitive greetings, and completion progress bars.
-- 📊 **Category Insights:** Breaks tasks down into **Work**, **Study**, **Personal**, and **Other** with individual statistics and list indicators.
-- 🔍 **Real-time Search:** Filter tasks dynamically by typing title, description, or category keywords.
-- 🎛️ **Advanced Filters & Sorting:** Filter by status, priority level, and categories. Sort by due date, priority severity, and creation timestamp.
-- 🌗 **System-synced Dark Mode:** Fully dynamic theme engine which syncs automatically with the system scheme or allows manually overriding settings (persisted locally).
-- 💾 **Offline-first Architecture:** Persists tasks and setting configurations locally via `AsyncStorage`.
-- ♿ **Accessible Interface:** Strictly structured around accessibility labels, checked state hooks, and accessible touch target areas (minimum 44x44 dp).
+### 📊 Dashboard
 
----
+- Pending task statistics
+- Completed task statistics
+- Overdue task statistics
+- Task completion progress
+- Dynamic greeting
+- Task overview
+
+### 🔍 Search & Navigation
+
+- Search tasks
+- Category-based navigation
+- Task details navigation
+- Bottom tab navigation
+- Stack navigation
+- Modern navigation icons
+
+### 🔐 Authentication
+
+- User registration
+- User login
+- Forgot-password screen
+- Authentication flow
+- Backend API integration
+
+### 🎨 UI & Experience
+
+- Modern dark-mode interface
+- Purple/indigo primary theme
+- Responsive mobile layout
+- Task cards
+- Floating action button
+- Empty states
+- Progress indicators
+- Modern icons
+- Pull-to-refresh support
 
 ## 🛠️ Technology Stack
 
-- **Framework:** [React Native](https://reactnative.dev) + [Expo (SDK 54)](https://expo.dev)
-- **Language:** [TypeScript](https://www.typescriptlang.org) (100% type-safe compilation)
-- **Navigation:** [React Navigation (v7)](https://reactnavigation.org)
-- **Local Persistence:** [@react-native-async-storage/async-storage](https://github.com/react-native-async-storage/async-storage)
-- **Feedback:** [expo-haptics](https://docs.expo.dev/versions/latest/sdk/haptics/)
-- **Icons:** [@expo/vector-icons (Feather, MaterialIcons)](https://icons.expo.fyi)
+### Frontend
+
+- **React Native**
+- **Expo SDK 54**
+- **TypeScript**
+- **React Navigation**
+- **Axios**
+- **React Native Paper**
+- **AsyncStorage**
+- **Expo Vector Icons**
+
+### Backend
+
+- **Node.js**
+- **Express.js**
+- **REST API**
+- **MongoDB Atlas**
+- **Mongoose**
+- **dotenv**
+
+### Development Tools
+
+- VS Code
+- Git & GitHub
+- Expo Development Build
+- Postman
+- MongoDB Atlas
+
+## 🏗️ Architecture
+
+TaskFlow follows a client-server architecture:
+
+```text
+┌───────────────────────────────┐
+│       React Native App        │
+│                               │
+│  Screens / Components         │
+│  Navigation                   │
+│  Context / State              │
+│  API Services                 │
+└───────────────┬───────────────┘
+                │
+                │ REST API
+                ▼
+┌───────────────────────────────┐
+│       Node.js + Express       │
+│                               │
+│  Routes                       │
+│  Controllers / Logic          │
+│  Authentication               │
+│  Task CRUD                    │
+└───────────────┬───────────────┘
+                │
+                │ Mongoose
+                ▼
+┌───────────────────────────────┐
+│         MongoDB Atlas         │
+│                               │
+│  Users                        │
+│  Tasks                        │
+└───────────────────────────────┘
+```
+
+## 📂 Frontend Structure
+
+```text
+react-native-project/
+│
+├── assets/
+├── components/
+│   └── TaskCard.tsx
+│
+├── context/
+│   └── TaskContext.tsx
+│
+├── navigation/
+│   └── AppNavigator.tsx
+│
+├── screens/
+│   ├── HomeScreen.tsx
+│   ├── ExploreScreen.tsx
+│   ├── DetailsScreen.tsx
+│   ├── AddTaskScreen.tsx
+│   └── auth/
+│       ├── LoginScreen.tsx
+│       ├── SignupScreen.tsx
+│       └── ForgotPasswordScreen.tsx
+│
+├── services/
+│   └── api.js
+│
+├── App.tsx
+├── package.json
+└── tsconfig.json
+```
+
+## 📂 Backend Structure
+
+```text
+taskflowbackend/
+│
+├── src/
+│   ├── config/
+│   │   └── db.js
+│   │
+│   ├── models/
+│   │   ├── Tasks.js
+│   │   └── user.js
+│   │
+│   ├── routes/
+│   │   └── taskroutes.js
+│   │
+│   ├── app.js
+│   └── server.js
+│
+├── .env
+├── .gitignore
+├── package.json
+└── package-lock.json
+```
+
+> `.env` contains private configuration such as the MongoDB connection string and should never be committed to GitHub.
+
+## 🔄 Task CRUD Flow
+
+TaskFlow communicates with the backend through REST APIs.
+
+```text
+Create Task
+    ↓
+React Native App
+    ↓
+Axios API Request
+    ↓
+Express Route
+    ↓
+Mongoose
+    ↓
+MongoDB Atlas
+    ↓
+API Response
+    ↓
+TaskFlow UI
+```
+
+The same architecture is used for retrieving, updating, and deleting tasks.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Make sure you have installed:
+
+- Node.js
+- npm
+- Git
+- Expo development environment
+- Android Studio or a physical Android device
+- MongoDB Atlas account
 
 ---
 
-## 🏗️ Architecture Overview
+# Frontend Setup
 
-The codebase is structured around clean, decoupled architectural layers ensuring separation of concerns:
+### 1. Clone the frontend repository
 
-```
-├── assets/                  # Branding files and media
-│   └── images/              # Dynamic custom checkmark assets (icon, splash)
-├── components/              # Decoupled UI components
-│   ├── ui/                  # Atom-level templates
-│   ├── DatePickerModal.tsx  # Custom scrollable calendar modal picker
-│   ├── FilterSortModal.tsx  # Bottom-sheet filter coordinator
-│   └── TaskCard.tsx         # List view card with checkbox trigger
-├── constants/               # Global configurations
-│   └── theme.ts             # Spacing, typography, and light/dark colors
-├── context/                 # Application state providers
-│   ├── TaskContext.tsx      # Coordinates task logic and state persistence
-│   └── ThemeContext.tsx     # Computes color scheme and stores preferences
-├── hooks/                   # Reusable business logic hooks
-│   ├── useTasks.ts          # State accessor for task lists and CRUD functions
-│   └── useAppTheme.ts       # Accessor for resolved colors and toggle options
-├── navigation/              # Route config
-│   └── AppNavigator.tsx     # Stack and Tab coordinators (strongly typed)
-├── screens/                 # Component views (HomeScreen, DetailsScreen, AddTaskScreen, ExploreScreen)
-├── storage/                 # Data persistence Layer
-│   └── taskStorage.ts       # Directly handles AsyncStorage calls for tasks/themes
-└── types/                   # TypeScript interfaces
-    └── task.ts              # Custom Task structural definitions
-```
-
-- **Persistence Layer:** AsyncStorage interactions are completely isolated inside `storage/taskStorage.ts`.
-- **State Management:** Logic is centralized in `context/` providers to prevent prop-drilling. Screens consume parameters and operations directly through dedicated custom hooks (`useTasks`, `useAppTheme`).
-- **Navigation Safety:** Tab and Stack navigators are fully checked by TS compiler. Route params utilize strong types (e.g. `DetailsScreen` reads dynamic `taskId` lookup).
-
----
-
-## 🚀 Setup & Installation
-
-Follow these steps to run the application locally on your emulator, device, or browser:
-
-### 1. Clone the repository
 ```bash
-git clone <repository-url>
-cd react-native-project
+git clone https://github.com/maazmaqbool106-creator/taskflow.git
+cd taskflow
 ```
 
 ### 2. Install dependencies
+
 ```bash
 npm install
 ```
 
-### 3. Start the Expo developer server
+### 3. Configure API URL
+
+Create a local environment file if your project uses environment variables:
+
+```text
+.env
+```
+
+Add your backend API URL according to your local/network configuration.
+
+**Do not commit this file to GitHub.**
+
+### 4. Start Expo
+
+```bash
+npx expo start
+```
+
+You can then run the application using an Android emulator or a connected physical device.
+
+---
+
+# Backend Setup
+
+### 1. Clone the backend repository
+
+Open another terminal:
+
+```bash
+git clone https://github.com/maazmaqbool106-creator/taskflowbackend.git
+cd taskflowbackend
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure MongoDB
+
+Create a `.env` file in the backend root directory:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+PORT=5000
+```
+
+Replace the MongoDB connection string with your own MongoDB Atlas connection string.
+
+### 4. Start the backend
+
 ```bash
 npm start
 ```
 
-### 4. Run on a simulator or device
-- **Android Emulator:** Press `a` in the terminal to boot the project.
-- **iOS Simulator:** Press `i` in the terminal (requires macOS).
-- **Physical Device:** Download the **Expo Go** application on your phone and scan the QR code displayed in the terminal/browser.
-- **Web Interface:** Press `w` in the terminal to view in your browser.
-
----
-
-## 🛠️ Verification & Quality Checks
-
-Run the compiler checks to ensure clean execution:
+If your project uses nodemon during development:
 
 ```bash
-# Verify TypeScript Type Safety
-npx tsc --noEmit
-
-# Run ESLint validation
-npm run lint
+npm run dev
 ```
+
+The backend will run on the configured port, for example:
+
+```text
+http://localhost:5000
+```
+
+## 🔒 Security
+
+Sensitive configuration should remain outside the repository.
+
+The following files should not be committed:
+
+```text
+.env
+node_modules/
+```
+
+Never expose:
+
+- MongoDB passwords
+- Database connection strings
+- API secrets
+- Authentication secrets
+
+Use environment variables for private configuration.
+
+## 🧪 API Testing
+
+Backend APIs were tested during development using **Postman**.
+
+Example task operations include:
+
+```text
+POST    /api/tasks
+GET     /api/tasks
+PUT     /api/tasks/:id
+DELETE  /api/tasks/:id
+```
+
+Actual routes may vary depending on the backend implementation.
+
+## 📸 Screenshots
+
+Add screenshots of the completed application here.
+
+Recommended screenshots:
+
+- Login screen
+- Signup screen
+- Home dashboard
+- Task creation screen
+- Task details screen
+- Categories screen
+- Dark-mode interface
+
+Example:
+
+```text
+screenshots/
+├── login.png
+├── home.png
+├── add-task.png
+├── details.png
+└── categories.png
+```
+
+## 📚 What I Learned
+
+Building TaskFlow helped me gain practical experience with:
+
+- React Native mobile application development
+- Expo development workflow
+- TypeScript
+- React Navigation
+- REST API integration
+- Axios
+- Node.js and Express.js
+- MongoDB Atlas
+- Mongoose
+- CRUD operations
+- Authentication flow
+- API testing with Postman
+- Git and GitHub
+- Frontend-backend integration
+- Debugging mobile and backend issues
+
+## 🔮 Future Improvements
+
+Planned improvements include:
+
+- Push notifications
+- Recurring tasks
+- Sub-task support
+- Productivity analytics
+- Cloud synchronization
+- Improved authentication and password recovery
+- Additional UI/UX improvements
+
+## 🔗 Repositories
+
+### Frontend
+
+https://github.com/maazmaqbool106-creator/taskflow
+
+### Backend
+
+https://github.com/maazmaqbool106-creator/taskflowbackend
+
+## 👨‍💻 Author
+
+**Maaz Ur Rehman**
+
+Computer Science Student | React Native | Node.js | MongoDB
 
 ---
 
-## 📈 Future Enhancements
-
-- 🔔 **Local Push Notifications:** Schedule notification alerts before task due dates occur.
-- 📁 **Sub-task Checklists:** Support nesting checklists within tasks for granular progress tracking.
-- 🔁 **Recurring Tasks:** Support daily, weekly, or monthly repetition configurations.
-- 📊 **Productivity Graphs:** Display monthly completion trends and category ratios using data charts.
-- ☁️ **Cloud Synchronization:** Add Firebase/Supabase backup compatibility when offline states resolve.
+⭐ If you find this project useful, feel free to explore the repositories and provide feedback.
