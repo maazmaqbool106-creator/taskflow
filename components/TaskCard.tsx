@@ -1,6 +1,6 @@
+import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { useAppTheme } from "../hooks/useAppTheme";
 import type { Task } from "../types/task";
 
@@ -30,7 +30,7 @@ export default function TaskCard({ task, onPress, onToggleComplete }: Props) {
   // Format date display
   const getFormattedDate = () => {
     if (!task.dueDate) return { text: "", isOverdue: false };
-    
+
     // Check if task is overdue (if incomplete and due date is yesterday or earlier)
     const todayStr = new Date().toISOString().split("T")[0];
     const isOverdue = !task.completed && task.dueDate < todayStr;
@@ -44,7 +44,7 @@ export default function TaskCard({ task, onPress, onToggleComplete }: Props) {
     if (task.dueDate === todayStr) {
       return { text: "Today", isOverdue: false };
     }
-    
+
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toISOString().split("T")[0];
@@ -58,12 +58,19 @@ export default function TaskCard({ task, onPress, onToggleComplete }: Props) {
   const dueInfo = getFormattedDate();
 
   return (
-    <View style={[styles.cardContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+    <View
+      style={[
+        styles.cardContainer,
+        { backgroundColor: colors.card, borderColor: colors.border },
+      ]}
+    >
       {/* Checkbox section - Explicitly styled as a column to prevent wrapping */}
       {onToggleComplete && (
         <Pressable
           onPress={onToggleComplete}
-          accessibilityLabel={task.completed ? "Mark task incomplete" : "Mark task complete"}
+          accessibilityLabel={
+            task.completed ? "Mark task incomplete" : "Mark task complete"
+          }
           accessibilityRole="checkbox"
           accessibilityState={{ checked: task.completed }}
           style={({ pressed }) => [
@@ -81,7 +88,9 @@ export default function TaskCard({ task, onPress, onToggleComplete }: Props) {
               },
             ]}
           >
-            {task.completed && <Feather name="check" size={12} color="#FFFFFF" />}
+            {task.completed && (
+              <Feather name="check" size={12} color="#FFFFFF" />
+            )}
           </View>
         </Pressable>
       )}
@@ -121,6 +130,8 @@ export default function TaskCard({ task, onPress, onToggleComplete }: Props) {
               {task.priority.toUpperCase()}
             </Text>
           </View>
+
+          <Feather name="chevron-right" size={17} color={colors.textMuted} />
         </View>
 
         {/* Description (if exists) */}
@@ -135,12 +146,17 @@ export default function TaskCard({ task, onPress, onToggleComplete }: Props) {
 
         {/* Bottom Row: Category & Date */}
         <View style={styles.bottomRow}>
-          <View style={[styles.categoryBadge, { backgroundColor: colors.primaryLight }]}>
+          <View
+            style={[
+              styles.categoryBadge,
+              { backgroundColor: colors.primaryLight },
+            ]}
+          >
             <Text style={[styles.categoryText, { color: colors.primary }]}>
               {task.category}
             </Text>
           </View>
-          
+
           {task.dueDate ? (
             <View style={styles.dateContainer}>
               <Feather
@@ -153,7 +169,10 @@ export default function TaskCard({ task, onPress, onToggleComplete }: Props) {
                 style={[
                   styles.dateText,
                   { color: colors.textMuted },
-                  dueInfo.isOverdue && { color: colors.overdue, fontWeight: "600" },
+                  dueInfo.isOverdue && {
+                    color: colors.overdue,
+                    fontWeight: "600",
+                  },
                 ]}
               >
                 {dueInfo.text}

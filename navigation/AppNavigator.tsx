@@ -1,22 +1,34 @@
+import { Feather } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { Feather } from "@expo/vector-icons";
-import { useAppTheme } from "../hooks/useAppTheme";
 
 import AddTaskScreen from "../screens/AddTaskScreen";
 import DetailsScreen from "../screens/DetailsScreen";
 import ExploreScreen from "../screens/ExploreScreen";
 import HomeScreen from "../screens/HomeScreen";
 
+import { useAppTheme } from "../hooks/useAppTheme";
+import ForgotPasswordScreen from "../screens/auth/ForgotPasswordScreen";
+import LoginScreen from "../screens/auth/LoginScreen";
+import SignupScreen from "../screens/auth/SignupScreen";
+
 export type RootStackParamList = {
+  Login: undefined;
+  Signup: undefined;
+  ForgotPassword: undefined;
+
   MainTabs: undefined;
+
+  AddTask:
+    | undefined
+    | {
+        editTaskId: string;
+      };
+
   Details: {
     taskId: string;
   };
-  AddTask: {
-    editTaskId?: string;
-  } | undefined;
 };
 
 export type TabParamList = {
@@ -34,24 +46,8 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: colors.card,
-          borderTopColor: colors.border,
-          height: 64,
-          paddingBottom: 10,
-          paddingTop: 8,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: -3 },
-          shadowOpacity: 0.05,
-          shadowRadius: 8,
-          elevation: 8,
-        },
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.tabIconDefault,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: "600",
-        },
+        tabBarInactiveTintColor: colors.textMuted,
       }}
     >
       <Tab.Screen
@@ -59,8 +55,12 @@ function MainTabs() {
         component={HomeScreen}
         options={{
           title: "Tasks",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="check-square" size={20} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Feather
+              name={focused ? "check-square" : "clipboard"}
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -70,8 +70,12 @@ function MainTabs() {
         component={ExploreScreen}
         options={{
           title: "Categories",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="grid" size={20} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Feather
+              name={focused ? "grid" : "folder"}
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -80,44 +84,41 @@ function MainTabs() {
 }
 
 export default function AppNavigator() {
-  const { colors } = useAppTheme();
-
   return (
     <Stack.Navigator
+      initialRouteName="Login"
       screenOptions={{
-        headerStyle: {
-          backgroundColor: colors.card,
-        },
-        headerTintColor: colors.text,
-        headerTitleStyle: {
-          fontWeight: "700",
-          fontSize: 17,
-        },
-        headerShadowVisible: false,
+        headerShown: false,
       }}
     >
+      {/* Authentication */}
+
+      <Stack.Screen name="Login" component={LoginScreen} />
+
+      <Stack.Screen name="Signup" component={SignupScreen} />
+
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+
+      {/* Main App */}
+
+      <Stack.Screen name="MainTabs" component={MainTabs} />
+
       <Stack.Screen
-        name="MainTabs"
-        component={MainTabs}
-        options={{
+        name="AddTask"
+        component={AddTaskScreen}
+        options={({ route }) => ({
           headerShown: false,
-        }}
+          title: route.params?.editTaskId ? "Edit Task" : "Add Task",
+        })}
       />
 
       <Stack.Screen
         name="Details"
         component={DetailsScreen}
         options={{
+          headerShown: true,
           title: "Task Details",
         }}
-      />
-
-      <Stack.Screen
-        name="AddTask"
-        component={AddTaskScreen}
-        options={({ route }) => ({
-          title: route.params?.editTaskId ? "Edit Task" : "Add Task",
-        })}
       />
     </Stack.Navigator>
   );

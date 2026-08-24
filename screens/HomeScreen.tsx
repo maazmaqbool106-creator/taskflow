@@ -1,7 +1,10 @@
+import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
   Pressable,
+  RefreshControl,
   StatusBar,
   StyleSheet,
   Text,
@@ -9,12 +12,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { useTasks } from "../hooks/useTasks";
-import { useAppTheme } from "../hooks/useAppTheme";
-import TaskCard from "../components/TaskCard";
 import FilterSortModal from "../components/FilterSortModal";
+import TaskCard from "../components/TaskCard";
+import { useAppTheme } from "../hooks/useAppTheme";
+import { useTasks } from "../hooks/useTasks";
 
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/AppNavigator";
@@ -24,16 +25,26 @@ type Props = {
 };
 
 export default function HomeScreen({ navigation }: Props) {
-  const { tasks, toggleTaskCompletion, loading } = useTasks();
-  const { colors, isDark, themePreference, setThemePreference, cardGradient } = useAppTheme();
+  const { tasks, toggleTaskCompletion, refreshTasks } = useTasks();
+  const { colors, isDark, themePreference, setThemePreference, cardGradient } =
+    useAppTheme();
+  const [refreshing, setRefreshing] = useState(false);
 
   // Search, filter, sort state
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "completed">("all");
-  const [filterPriority, setFilterPriority] = useState<"all" | "low" | "medium" | "high">("all");
-  const [filterCategory, setFilterCategory] = useState<"all" | "Work" | "Study" | "Personal" | "Other">("all");
-  const [sortBy, setSortBy] = useState<"dueDate" | "priority" | "createdAt">("dueDate");
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "pending" | "completed"
+  >("all");
+  const [filterPriority, setFilterPriority] = useState<
+    "all" | "low" | "medium" | "high"
+  >("all");
+  const [filterCategory, setFilterCategory] = useState<
+    "all" | "Work" | "Study" | "Personal" | "Other"
+  >("all");
+  const [sortBy, setSortBy] = useState<"dueDate" | "priority" | "createdAt">(
+    "dueDate",
+  );
 
   // Dynamic values
   const greeting = useMemo(() => {
@@ -56,9 +67,11 @@ export default function HomeScreen({ navigation }: Props) {
     const total = tasks.length;
     const completed = tasks.filter((t) => t.completed).length;
     const pending = total - completed;
-    
+
     const todayStr = new Date().toISOString().split("T")[0];
-    const overdue = tasks.filter((t) => !t.completed && t.dueDate && t.dueDate < todayStr).length;
+    const overdue = tasks.filter(
+      (t) => !t.completed && t.dueDate && t.dueDate < todayStr,
+    ).length;
 
     const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
 
@@ -81,10 +94,12 @@ export default function HomeScreen({ navigation }: Props) {
       if (filterStatus === "completed" && !task.completed) return false;
 
       // Priority filter
-      if (filterPriority !== "all" && task.priority !== filterPriority) return false;
+      if (filterPriority !== "all" && task.priority !== filterPriority)
+        return false;
 
       // Category filter
-      if (filterCategory !== "all" && task.category !== filterCategory) return false;
+      if (filterCategory !== "all" && task.category !== filterCategory)
+        return false;
 
       return true;
     });
@@ -101,13 +116,22 @@ export default function HomeScreen({ navigation }: Props) {
         return priorityWeight[b.priority] - priorityWeight[a.priority];
       }
       if (sortBy === "createdAt") {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       }
       return 0;
     });
 
     return result;
-  }, [tasks, searchQuery, filterStatus, filterPriority, filterCategory, sortBy]);
+  }, [
+    tasks,
+    searchQuery,
+    filterStatus,
+    filterPriority,
+    filterCategory,
+    sortBy,
+  ]);
 
   const handleResetFilters = () => {
     setFilterStatus("all");
@@ -116,9 +140,9 @@ export default function HomeScreen({ navigation }: Props) {
     setSortBy("dueDate");
   };
 
-  const hasActiveFilters = 
-    filterStatus !== "all" || 
-    filterPriority !== "all" || 
+  const hasActiveFilters =
+    filterStatus !== "all" ||
+    filterPriority !== "all" ||
     filterCategory !== "all" ||
     sortBy !== "dueDate";
 
@@ -132,6 +156,15 @@ export default function HomeScreen({ navigation }: Props) {
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refreshTasks();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const getThemeIconName = () => {
     if (themePreference === "system") return "monitor";
     if (themePreference === "light") return "sun";
@@ -139,20 +172,29 @@ export default function HomeScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={["top"]}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: colors.background }]}
+      edges={["top"]}
+    >
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={[styles.greeting, { color: colors.textSecondary }]}>{greeting}</Text>
-            <Text style={[styles.heading, { color: colors.text }]}>TaskFlow</Text>
+            <Text style={[styles.greeting, { color: colors.textSecondary }]}>
+              {greeting}
+            </Text>
+            <Text style={[styles.heading, { color: colors.text }]}>
+              TaskFlow
+            </Text>
           </View>
 
           <View style={styles.headerActions}>
-            <Text style={[styles.dateText, { color: colors.textMuted }]}>{formattedDate}</Text>
-            
+            <Text style={[styles.dateText, { color: colors.textMuted }]}>
+              {formattedDate}
+            </Text>
+
             {/* Quick theme toggler */}
             <Pressable
               onPress={toggleTheme}
@@ -164,25 +206,54 @@ export default function HomeScreen({ navigation }: Props) {
                 pressed && styles.pressed,
               ]}
             >
-              <Feather name={getThemeIconName()} size={18} color={colors.primary} />
+              <Feather
+                name={getThemeIconName()}
+                size={18}
+                color={colors.primary}
+              />
             </Pressable>
           </View>
         </View>
 
         {/* Dashboard Grid Stats */}
         <View style={styles.statsOverview}>
-          <View style={[styles.statBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Pending</Text>
-            <Text style={[styles.statNumber, { color: colors.text }]}>{stats.pending}</Text>
+          <View
+            style={[
+              styles.statBox,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+              Pending
+            </Text>
+            <Text style={[styles.statNumber, { color: colors.text }]}>
+              {stats.pending}
+            </Text>
           </View>
 
-          <View style={[styles.statBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Completed</Text>
-            <Text style={[styles.statNumber, { color: colors.success }]}>{stats.completed}</Text>
+          <View
+            style={[
+              styles.statBox,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+              Completed
+            </Text>
+            <Text style={[styles.statNumber, { color: colors.success }]}>
+              {stats.completed}
+            </Text>
           </View>
 
-          <View style={[styles.statBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Overdue</Text>
+          <View
+            style={[
+              styles.statBox,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+              Overdue
+            </Text>
             <Text
               style={[
                 styles.statNumber,
@@ -207,18 +278,25 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
           <View style={styles.progressBarBg}>
             <View
-              style={[
-                styles.progressBarFill,
-                { width: `${stats.progress}%` },
-              ]}
+              style={[styles.progressBarFill, { width: `${stats.progress}%` }]}
             />
           </View>
         </LinearGradient>
 
         {/* Search Bar & Filter Action Row */}
         <View style={styles.searchRow}>
-          <View style={[styles.searchContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Feather name="search" size={18} color={colors.textMuted} style={styles.searchIcon} />
+          <View
+            style={[
+              styles.searchContainer,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <Feather
+              name="search"
+              size={18}
+              color={colors.textMuted}
+              style={styles.searchIcon}
+            />
             <TextInput
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -238,7 +316,9 @@ export default function HomeScreen({ navigation }: Props) {
             style={({ pressed }) => [
               styles.filterBtn,
               {
-                backgroundColor: hasActiveFilters ? colors.primaryLight : colors.card,
+                backgroundColor: hasActiveFilters
+                  ? colors.primaryLight
+                  : colors.card,
                 borderColor: hasActiveFilters ? colors.primary : colors.border,
               },
               pressed && styles.pressed,
@@ -255,9 +335,18 @@ export default function HomeScreen({ navigation }: Props) {
         {/* Selected Filters indicators */}
         {hasActiveFilters && (
           <View style={styles.activeFiltersRow}>
-            <Text style={[styles.filtersHint, { color: colors.textMuted }]}>Filters active</Text>
-            <Pressable onPress={handleResetFilters} style={styles.clearFiltersBtn}>
-              <Text style={[styles.clearFiltersText, { color: colors.primary }]}>Clear All</Text>
+            <Text style={[styles.filtersHint, { color: colors.textMuted }]}>
+              Filters active
+            </Text>
+            <Pressable
+              onPress={handleResetFilters}
+              style={styles.clearFiltersBtn}
+            >
+              <Text
+                style={[styles.clearFiltersText, { color: colors.primary }]}
+              >
+                Clear All
+              </Text>
             </Pressable>
           </View>
         )}
@@ -265,14 +354,25 @@ export default function HomeScreen({ navigation }: Props) {
         {/* Task List Section */}
         <View style={styles.taskListHeader}>
           <View style={styles.taskListHeaderLeft}>
-            <View style={[styles.titleIndicator, { backgroundColor: colors.primary }]} />
+            <View
+              style={[
+                styles.titleIndicator,
+                { backgroundColor: colors.primary },
+              ]}
+            />
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               {searchQuery ? "Search Results" : "My Tasks"}
             </Text>
           </View>
-          <View style={[styles.taskCountBadge, { backgroundColor: colors.primaryLight }]}>
+          <View
+            style={[
+              styles.taskCountBadge,
+              { backgroundColor: colors.primaryLight },
+            ]}
+          >
             <Text style={[styles.taskCountText, { color: colors.primary }]}>
-              {processedTasks.length} {processedTasks.length === 1 ? "task" : "tasks"}
+              {processedTasks.length}{" "}
+              {processedTasks.length === 1 ? "task" : "tasks"}
             </Text>
           </View>
         </View>
@@ -283,17 +383,29 @@ export default function HomeScreen({ navigation }: Props) {
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+            />
+          }
           renderItem={({ item }) => (
             <TaskCard
               task={item}
-              onPress={() => navigation.navigate("Details", { taskId: item.id })}
+              onPress={() =>
+                navigation.navigate("Details", { taskId: item.id })
+              }
               onToggleComplete={() => toggleTaskCompletion(item.id)}
             />
           )}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Feather name="clipboard" size={48} color={colors.textMuted} />
-              <Text style={[styles.emptyTitle, { color: colors.text }]}>No tasks found</Text>
+              <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                No tasks found
+              </Text>
               <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
                 {searchQuery || hasActiveFilters
                   ? "Try adjusting your search query or active filters."
