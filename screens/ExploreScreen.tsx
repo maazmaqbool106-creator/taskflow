@@ -398,15 +398,20 @@ const styles = StyleSheet.create({
   metricCard: {
     flex: 1,
     borderWidth: 1,
-    borderRadius: 18,
+    borderRadius: 16,
     padding: 16,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.015,
+    shadowRadius: 6,
+    elevation: 1,
   },
   metricIcon: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   metricValue: {
-    fontSize: 20,
-    fontWeight: "800",
+    fontSize: 22,
+    fontWeight: "700",
+    letterSpacing: -0.5,
     marginBottom: 2,
   },
   metricLabel: {
@@ -415,9 +420,13 @@ const styles = StyleSheet.create({
   },
   cardSection: {
     borderWidth: 1,
-    borderRadius: 18,
+    borderRadius: 16,
     padding: 16,
     marginTop: 18,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.015,
+    shadowRadius: 6,
+    elevation: 1,
   },
   cardSectionHeader: {
     flexDirection: "row",
@@ -429,7 +438,7 @@ const styles = StyleSheet.create({
   },
   cardSectionTitle: {
     fontSize: 15,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   cardSectionDesc: {
     fontSize: 12,

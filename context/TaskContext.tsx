@@ -14,6 +14,7 @@ type TaskContextType = {
   deleteTask: (id: string) => Promise<void>;
   toggleTaskCompletion: (id: string) => Promise<void>;
   refreshTasks: () => Promise<void>;
+  clearTasks: () => void;
 };
 
 export const TaskContext = createContext<TaskContextType | undefined>(
@@ -141,6 +142,10 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     [tasks, updateTask],
   );
 
+  const clearTasks = useCallback(() => {
+    setTasks([]);
+  }, []);
+
   return (
     <TaskContext.Provider
       value={{
@@ -151,6 +156,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         deleteTask,
         toggleTaskCompletion,
         refreshTasks,
+        clearTasks,
       }}
     >
       {children}

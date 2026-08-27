@@ -13,7 +13,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Details">;
 export default function DetailsScreen({ route, navigation }: Props) {
   const { taskId } = route.params;
   const { tasks, toggleTaskCompletion, deleteTask } = useTasks();
-  const { colors } = useAppTheme();
+  const { colors, isDark } = useAppTheme();
 
   const task = tasks.find((t) => t.id === taskId);
 
@@ -55,11 +55,26 @@ export default function DetailsScreen({ route, navigation }: Props) {
   const getPriorityColors = () => {
     switch (task.priority) {
       case "high":
-        return { bg: colors.dangerLight, text: colors.priorityHigh, iconColor: colors.priorityHigh };
+        return {
+          bg: colors.dangerLight,
+          text: colors.priorityHigh,
+          iconColor: colors.priorityHigh,
+          border: isDark ? "rgba(248, 113, 113, 0.2)" : "rgba(239, 68, 68, 0.15)",
+        };
       case "medium":
-        return { bg: colors.warningLight, text: colors.priorityMedium, iconColor: colors.priorityMedium };
+        return {
+          bg: colors.warningLight,
+          text: colors.priorityMedium,
+          iconColor: colors.priorityMedium,
+          border: isDark ? "rgba(251, 191, 36, 0.2)" : "rgba(217, 119, 6, 0.15)",
+        };
       case "low":
-        return { bg: colors.successLight, text: colors.priorityLow, iconColor: colors.priorityLow };
+        return {
+          bg: colors.successLight,
+          text: colors.priorityLow,
+          iconColor: colors.priorityLow,
+          border: isDark ? "rgba(52, 211, 153, 0.2)" : "rgba(16, 185, 129, 0.15)",
+        };
     }
   };
 
@@ -94,14 +109,14 @@ export default function DetailsScreen({ route, navigation }: Props) {
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         {/* Priority & Category Row */}
         <View style={styles.badgeRow}>
-          <View style={[styles.badge, { backgroundColor: pColors.bg }]}>
+          <View style={[styles.badge, { backgroundColor: pColors.bg, borderColor: pColors.border, borderWidth: 1 }]}>
             <Feather name="flag" size={12} color={pColors.iconColor} style={styles.badgeIcon} />
             <Text style={[styles.badgeText, { color: pColors.text }]}>
               {task.priority.toUpperCase()} PRIORITY
             </Text>
           </View>
 
-          <View style={[styles.badge, { backgroundColor: colors.primaryLight }]}>
+          <View style={[styles.badge, { backgroundColor: colors.primaryLight, borderColor: colors.primary, borderWidth: 1 }]}>
             <Feather name="tag" size={12} color={colors.primary} style={styles.badgeIcon} />
             <Text style={[styles.badgeText, { color: colors.primary }]}>
               {task.category}

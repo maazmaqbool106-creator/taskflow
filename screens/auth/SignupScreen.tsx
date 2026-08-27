@@ -12,27 +12,31 @@ import {
   View,
 } from "react-native";
 
+import API from "../../services/api";
+import { useAppTheme } from "../../hooks/useAppTheme";
+
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../navigation/AppNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Signup">;
 
 export default function SignupScreen({ navigation }: Props) {
+  const { colors } = useAppTheme();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [nameFocused, setNameFocused] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [ageFocused, setAgeFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
 
-  const handleSignup = () => {
-    console.log("Signup:", {
-      name,
-      email,
-      password,
-      confirmPassword,
-    });
-
+  const handleSignup = async () => {
     if (!name.trim() || !email.trim() || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields.");
+      Alert.alert("Error", "Please fill in all required fields.");
       return;
     }
 
@@ -41,15 +45,44 @@ export default function SignupScreen({ navigation }: Props) {
       return;
     }
 
-    Alert.alert(
-      "Success",
-      "Account created successfully! Please log in.",
-      [{ text: "OK", onPress: () => navigation.navigate("Login") }]
-    );
+    try {
+      setLoading(true);
+
+      await API.post("/auth/register", {
+        name: name.trim(),
+        email: email.trim(),
+        age: age ? Number(age) : undefined,
+        password,
+      });
+
+      Alert.alert(
+        "Success",
+        "Account created successfully! Please log in.",
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Login"),
+          },
+        ]
+      );
+    } catch (error: any) {
+      console.log(
+        "Signup error:",
+        error.response?.data || error.message
+      );
+
+      Alert.alert(
+        "Signup Failed",
+        error.response?.data?.message ||
+          "Unable to create account. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -60,72 +93,146 @@ export default function SignupScreen({ navigation }: Props) {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.header}>
-            <Text style={styles.logo}>T</Text>
+            <Text style={[styles.logo, { backgroundColor: colors.primary }]}>T</Text>
 
-            <Text style={styles.title}>Create your account</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Create your account</Text>
 
-            <Text style={styles.subtitle}>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
               Start organizing your tasks with TaskFlow.
             </Text>
           </View>
 
-          <View style={styles.form}>
-            <Text style={styles.label}>Full Name</Text>
+          <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Full Name</Text>
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: nameFocused ? colors.primary : colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Enter your full name"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={colors.textMuted}
               value={name}
               onChangeText={setName}
+              editable={!loading}
+              onFocus={() => setNameFocused(true)}
+              onBlur={() => setNameFocused(false)}
             />
 
-            <Text style={styles.label}>Email</Text>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: emailFocused ? colors.primary : colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Enter your email"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={colors.textMuted}
               keyboardType="email-address"
               autoCapitalize="none"
+              autoCorrect={false}
               value={email}
               onChangeText={setEmail}
+              editable={!loading}
+              onFocus={() => setEmailFocused(true)}
+              onBlur={() => setEmailFocused(false)}
             />
 
-            <Text style={styles.label}>Password</Text>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Age</Text>
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: ageFocused ? colors.primary : colors.border,
+                  color: colors.text,
+                },
+              ]}
+              placeholder="Enter your age"
+              placeholderTextColor={colors.textMuted}
+              keyboardType="numeric"
+              value={age}
+              onChangeText={setAge}
+              editable={!loading}
+              onFocus={() => setAgeFocused(true)}
+              onBlur={() => setAgeFocused(false)}
+            />
+
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Password</Text>
+
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: passwordFocused ? colors.primary : colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Create a password"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={colors.textMuted}
               secureTextEntry
               value={password}
               onChangeText={setPassword}
+              editable={!loading}
+              onFocus={() => setPasswordFocused(true)}
+              onBlur={() => setPasswordFocused(false)}
             />
 
-            <Text style={styles.label}>Confirm Password</Text>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Confirm Password</Text>
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: confirmPasswordFocused ? colors.primary : colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Confirm your password"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={colors.textMuted}
               secureTextEntry
               value={confirmPassword}
               onChangeText={setConfirmPassword}
+              editable={!loading}
+              onFocus={() => setConfirmPasswordFocused(true)}
+              onBlur={() => setConfirmPasswordFocused(false)}
             />
 
-            <Pressable style={styles.signupButton} onPress={handleSignup}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.signupButton,
+                { backgroundColor: colors.primary },
+                loading && styles.signupButtonDisabled,
+                pressed && !loading && { opacity: 0.9, transform: [{ scale: 0.98 }] },
+              ]}
+              onPress={handleSignup}
+              disabled={loading}
+            >
               <Text style={styles.signupButtonText}>
-                Create Account
+                {loading ? "Creating..." : "Create Account"}
               </Text>
             </Pressable>
 
             <View style={styles.loginRow}>
-              <Text style={styles.loginText}>
+              <Text style={[styles.loginText, { color: colors.textMuted }]}>
                 Already have an account?
               </Text>
 
-              <Pressable onPress={() => navigation.navigate("Login")}>
+              <Pressable
+                onPress={() => navigation.navigate("Login")}
+                disabled={loading}
+              >
                 <Text style={styles.loginLink}> Log in</Text>
               </Pressable>
             </View>
@@ -219,6 +326,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 6,
+  },
+
+  signupButtonDisabled: {
+    opacity: 0.6,
   },
 
   signupButtonText: {

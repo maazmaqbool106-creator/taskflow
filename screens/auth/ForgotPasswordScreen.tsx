@@ -12,13 +12,17 @@ import {
     View,
 } from "react-native";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
+
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../navigation/AppNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ForgotPassword">;
 
 export default function ForgotPasswordScreen({ navigation }: Props) {
+  const { colors } = useAppTheme();
   const [email, setEmail] = useState("");
+  const [emailFocused, setEmailFocused] = useState(false);
 
   const handleReset = () => {
     console.log("Password reset requested for:", email);
@@ -34,7 +38,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -44,31 +48,47 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <View style={styles.icon}>
-              <Text style={styles.iconText}>?</Text>
+            <View style={[styles.icon, { backgroundColor: colors.primaryLight }]}>
+              <Text style={[styles.iconText, { color: colors.primary }]}>?</Text>
             </View>
 
-            <Text style={styles.title}>Forgot password?</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Forgot password?</Text>
 
-            <Text style={styles.subtitle}>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
               Enter your email address and we'll help you reset your password.
             </Text>
           </View>
 
-          <View style={styles.form}>
-            <Text style={styles.label}>Email Address</Text>
+          <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Email Address</Text>
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: emailFocused ? colors.primary : colors.border,
+                  color: colors.text,
+                },
+              ]}
               placeholder="Enter your email"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={colors.textMuted}
               keyboardType="email-address"
               autoCapitalize="none"
               value={email}
               onChangeText={setEmail}
+              onFocus={() => setEmailFocused(true)}
+              onBlur={() => setEmailFocused(false)}
             />
 
-            <Pressable style={styles.button} onPress={handleReset}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                { backgroundColor: colors.primary },
+                pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
+              ]}
+              onPress={handleReset}
+            >
               <Text style={styles.buttonText}>Send Reset Link</Text>
             </Pressable>
 
@@ -76,7 +96,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
               style={styles.backButton}
               onPress={() => navigation.navigate("Login")}
             >
-              <Text style={styles.backText}>← Back to Login</Text>
+              <Text style={[styles.backText, { color: colors.primary }]}>← Back to Login</Text>
             </Pressable>
           </View>
         </ScrollView>

@@ -84,13 +84,17 @@ export default function FilterSortModal({
                     onPress={() => setFilterStatus(opt.value)}
                     style={[
                       styles.chip,
-                      { backgroundColor: isSelected ? colors.primary : colors.border },
+                      {
+                        backgroundColor: isSelected ? colors.primaryLight : colors.borderSoft,
+                        borderWidth: 1.5,
+                        borderColor: isSelected ? colors.primary : "transparent",
+                      },
                     ]}
                   >
                     <Text
                       style={[
                         styles.chipText,
-                        { color: isSelected ? "#FFFFFF" : colors.textSecondary },
+                        { color: isSelected ? colors.primary : colors.textSecondary },
                       ]}
                     >
                       {opt.label}
@@ -116,13 +120,17 @@ export default function FilterSortModal({
                     onPress={() => setFilterPriority(opt.value)}
                     style={[
                       styles.chip,
-                      { backgroundColor: isSelected ? colors.primary : colors.border },
+                      {
+                        backgroundColor: isSelected ? colors.primaryLight : colors.borderSoft,
+                        borderWidth: 1.5,
+                        borderColor: isSelected ? colors.primary : "transparent",
+                      },
                     ]}
                   >
                     <Text
                       style={[
                         styles.chipText,
-                        { color: isSelected ? "#FFFFFF" : colors.textSecondary },
+                        { color: isSelected ? colors.primary : colors.textSecondary },
                       ]}
                     >
                       {opt.label}
@@ -149,13 +157,17 @@ export default function FilterSortModal({
                     onPress={() => setFilterCategory(opt.value)}
                     style={[
                       styles.chip,
-                      { backgroundColor: isSelected ? colors.primary : colors.border },
+                      {
+                        backgroundColor: isSelected ? colors.primaryLight : colors.borderSoft,
+                        borderWidth: 1.5,
+                        borderColor: isSelected ? colors.primary : "transparent",
+                      },
                     ]}
                   >
                     <Text
                       style={[
                         styles.chipText,
-                        { color: isSelected ? "#FFFFFF" : colors.textSecondary },
+                        { color: isSelected ? colors.primary : colors.textSecondary },
                       ]}
                     >
                       {opt.label}
@@ -180,13 +192,17 @@ export default function FilterSortModal({
                     onPress={() => setSortBy(opt.value)}
                     style={[
                       styles.chip,
-                      { backgroundColor: isSelected ? colors.primary : colors.border },
+                      {
+                        backgroundColor: isSelected ? colors.primaryLight : colors.borderSoft,
+                        borderWidth: 1.5,
+                        borderColor: isSelected ? colors.primary : "transparent",
+                      },
                     ]}
                   >
                     <Text
                       style={[
                         styles.chipText,
-                        { color: isSelected ? "#FFFFFF" : colors.textSecondary },
+                        { color: isSelected ? colors.primary : colors.textSecondary },
                       ]}
                     >
                       {opt.label}

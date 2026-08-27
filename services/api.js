@@ -1,4 +1,5 @@
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API = axios.create({
   baseURL: "https://taskflowbackend-rust.vercel.app/api",
@@ -6,5 +7,19 @@ const API = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+// Automatically attach access token to every protected request
+API.interceptors.request.use(
+  async (config) => {
+    const token = await AsyncStorage.getItem("accessToken");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
 export default API;

@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import FilterSortModal from "../components/FilterSortModal";
 import TaskCard from "../components/TaskCard";
 import { useAppTheme } from "../hooks/useAppTheme";
@@ -25,7 +26,7 @@ type Props = {
 };
 
 export default function HomeScreen({ navigation }: Props) {
-  const { tasks, toggleTaskCompletion, refreshTasks } = useTasks();
+  const { tasks, toggleTaskCompletion, refreshTasks, clearTasks } = useTasks();
   const { colors, isDark, themePreference, setThemePreference, cardGradient } =
     useAppTheme();
   const [refreshing, setRefreshing] = useState(false);
@@ -156,6 +157,22 @@ export default function HomeScreen({ navigation }: Props) {
     }
   };
 
+  useEffect(() => {
+    void refreshTasks();
+  }, [refreshTasks]);
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("accessToken");
+      await AsyncStorage.removeItem("refreshToken");
+      await AsyncStorage.removeItem("user");
+      clearTasks();
+      navigation.replace("Login");
+    } catch (error) {
+      console.log("Error logging out:", error);
+    }
+  };
+
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
@@ -195,23 +212,43 @@ export default function HomeScreen({ navigation }: Props) {
               {formattedDate}
             </Text>
 
-            {/* Quick theme toggler */}
-            <Pressable
-              onPress={toggleTheme}
-              accessibilityLabel={`Change theme. Current preference is ${themePreference}`}
-              accessibilityRole="button"
-              style={({ pressed }) => [
-                styles.themeIconContainer,
-                { backgroundColor: colors.card, borderColor: colors.border },
-                pressed && styles.pressed,
-              ]}
-            >
-              <Feather
-                name={getThemeIconName()}
-                size={18}
-                color={colors.primary}
-              />
-            </Pressable>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              {/* Quick theme toggler */}
+              <Pressable
+                onPress={toggleTheme}
+                accessibilityLabel={`Change theme. Current preference is ${themePreference}`}
+                accessibilityRole="button"
+                style={({ pressed }) => [
+                  styles.themeIconContainer,
+                  { backgroundColor: colors.card, borderColor: colors.border },
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Feather
+                  name={getThemeIconName()}
+                  size={18}
+                  color={colors.primary}
+                />
+              </Pressable>
+
+              {/* Logout button */}
+              <Pressable
+                onPress={handleLogout}
+                accessibilityLabel="Log out"
+                accessibilityRole="button"
+                style={({ pressed }) => [
+                  styles.themeIconContainer,
+                  { backgroundColor: colors.card, borderColor: colors.border },
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Feather
+                  name="log-out"
+                  size={18}
+                  color={colors.danger || "#EF4444"}
+                />
+              </Pressable>
+            </View>
           </View>
         </View>
 
@@ -223,9 +260,12 @@ export default function HomeScreen({ navigation }: Props) {
               { backgroundColor: colors.card, borderColor: colors.border },
             ]}
           >
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-              Pending
-            </Text>
+            <View style={styles.statHeader}>
+              <Text style={[styles.statLabel, { color: colors.textMuted }]}>
+                Pending
+              </Text>
+              <Feather name="clock" size={13} color={colors.warning} />
+            </View>
             <Text style={[styles.statNumber, { color: colors.text }]}>
               {stats.pending}
             </Text>
@@ -237,9 +277,12 @@ export default function HomeScreen({ navigation }: Props) {
               { backgroundColor: colors.card, borderColor: colors.border },
             ]}
           >
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-              Completed
-            </Text>
+            <View style={styles.statHeader}>
+              <Text style={[styles.statLabel, { color: colors.textMuted }]}>
+                Done
+              </Text>
+              <Feather name="check-circle" size={13} color={colors.success} />
+            </View>
             <Text style={[styles.statNumber, { color: colors.success }]}>
               {stats.completed}
             </Text>
@@ -251,13 +294,20 @@ export default function HomeScreen({ navigation }: Props) {
               { backgroundColor: colors.card, borderColor: colors.border },
             ]}
           >
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-              Overdue
-            </Text>
+            <View style={styles.statHeader}>
+              <Text style={[styles.statLabel, { color: colors.textMuted }]}>
+                Overdue
+              </Text>
+              <Feather
+                name="alert-circle"
+                size={13}
+                color={stats.overdue > 0 ? colors.danger : colors.textMuted}
+              />
+            </View>
             <Text
               style={[
                 styles.statNumber,
-                { color: stats.overdue > 0 ? colors.danger : colors.textMuted },
+                { color: stats.overdue > 0 ? colors.danger : colors.text },
               ]}
             >
               {stats.overdue}
@@ -419,7 +469,7 @@ export default function HomeScreen({ navigation }: Props) {
         <Pressable
           style={({ pressed }) => [
             styles.fab,
-            { backgroundColor: colors.primary },
+            { backgroundColor: colors.primary, shadowColor: colors.primary },
             pressed && styles.fabPressed,
           ]}
           onPress={() => navigation.navigate("AddTask")}
@@ -496,22 +546,28 @@ const styles = StyleSheet.create({
   },
   statBox: {
     flex: 1,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
+    padding: 12,
+    alignItems: "flex-start",
+  },
+  statHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    width: "100%",
+    marginBottom: 6,
   },
   statLabel: {
     fontSize: 11,
-    fontWeight: "700",
+    fontWeight: "600",
     textTransform: "uppercase",
-    letterSpacing: 0.3,
-    marginBottom: 4,
+    letterSpacing: 0.5,
   },
   statNumber: {
-    fontSize: 18,
-    fontWeight: "800",
+    fontSize: 20,
+    fontWeight: "700",
+    letterSpacing: -0.5,
   },
   progressCard: {
     borderRadius: 16,
@@ -556,9 +612,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderRadius: 14,
+    borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
+    elevation: 1,
   },
   searchIcon: {
     marginRight: 8,
@@ -571,10 +632,15 @@ const styles = StyleSheet.create({
   filterBtn: {
     width: 48,
     height: 48,
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
+    elevation: 1,
   },
   activeFiltersRow: {
     flexDirection: "row",
@@ -649,19 +715,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 0,
     bottom: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
     elevation: 6,
   },
   fabPressed: {
     opacity: 0.85,
-    transform: [{ scale: 0.96 }],
+    transform: [{ scale: 0.95 }],
   },
 });

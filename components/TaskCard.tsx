@@ -11,17 +11,29 @@ type Props = {
 };
 
 export default function TaskCard({ task, onPress, onToggleComplete }: Props) {
-  const { colors } = useAppTheme();
+  const { colors, isDark } = useAppTheme();
 
   // Helper for priority color badge
   const getPriorityStyle = () => {
     switch (task.priority) {
       case "high":
-        return { bg: colors.dangerLight, text: colors.priorityHigh };
+        return {
+          bg: colors.dangerLight,
+          text: colors.priorityHigh,
+          border: isDark ? "rgba(248, 113, 113, 0.2)" : "rgba(239, 68, 68, 0.15)",
+        };
       case "medium":
-        return { bg: colors.warningLight, text: colors.priorityMedium };
+        return {
+          bg: colors.warningLight,
+          text: colors.priorityMedium,
+          border: isDark ? "rgba(251, 191, 36, 0.2)" : "rgba(217, 119, 6, 0.15)",
+        };
       case "low":
-        return { bg: colors.successLight, text: colors.priorityLow };
+        return {
+          bg: colors.successLight,
+          text: colors.priorityLow,
+          border: isDark ? "rgba(52, 211, 153, 0.2)" : "rgba(16, 185, 129, 0.15)",
+        };
     }
   };
 
@@ -123,7 +135,7 @@ export default function TaskCard({ task, onPress, onToggleComplete }: Props) {
           <View
             style={[
               styles.priorityBadge,
-              { backgroundColor: priorityColors.bg },
+              { backgroundColor: priorityColors.bg, borderColor: priorityColors.border },
             ]}
           >
             <Text style={[styles.priorityText, { color: priorityColors.text }]}>
@@ -192,39 +204,39 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 12,
     borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
     elevation: 2,
-    width: "100%", // Explicitly fill container width
-    overflow: "hidden", // Clean card bounds
+    width: "100%",
+    overflow: "hidden",
   },
   checkboxArea: {
-    width: 48, // Fixed width column for checkbox to prevent wrapping
+    paddingLeft: 16,
+    paddingRight: 8,
     justifyContent: "center",
     alignItems: "center",
-    alignSelf: "stretch", // Span full height of card
+    alignSelf: "stretch",
   },
   checkboxCircle: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    borderWidth: 2, // Slightly thicker border for outstanding visual contrast
+    borderWidth: 1.5,
     justifyContent: "center",
     alignItems: "center",
   },
   contentArea: {
     flex: 1,
     padding: 16,
-    paddingLeft: 0, // Tight layout next to checkbox column
-    flexDirection: "column", // Explicit column flow
+    paddingLeft: 8,
+    flexDirection: "column",
   },
   pressed: {
-    opacity: 0.75,
+    opacity: 0.85,
   },
   completedCard: {
-    opacity: 0.75,
+    opacity: 0.6,
   },
   topRow: {
     flexDirection: "row",
@@ -235,9 +247,10 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    minWidth: 0, // CRITICAL: Prevents text node from collapsing to 0px in Chrome/Web browsers
+    minWidth: 0,
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "600",
+    letterSpacing: -0.2,
   },
   completedTitle: {
     textDecorationLine: "line-through",
@@ -262,7 +275,7 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 11,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   dateContainer: {
     flexDirection: "row",
@@ -278,10 +291,13 @@ const styles = StyleSheet.create({
   priorityBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "transparent",
   },
   priorityText: {
     fontSize: 9,
-    fontWeight: "800",
+    fontWeight: "700",
+    letterSpacing: 0.4,
   },
 });

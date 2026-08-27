@@ -2,27 +2,27 @@ import { Platform } from "react-native";
 
 export const Colors = {
   light: {
-    primary: "#4F46E5", // Deep Premium Indigo
-    secondary: "#7C3AED", // Amethyst Violet
-    accent: "#EC4899", // Neon Pink
-    primaryLight: "#F0F0FF", // Rich soft indigo overlay
-    background: "#F9FAFB", // Extremely clean warm light gray
-    card: "#FFFFFF",
-    text: "#111827", // Bold slate 900
-    textSecondary: "#374151", // Readable gray 700
-    textMuted: "#6B7280", // Legible gray 500 for secondary details
-    border: "#D1D5DB", // Slate 300 (solid and visible border)
-    borderSoft: "#E5E7EB", // Clean gray 200
-    icon: "#4B5563", // Gray 600
-    tabIconDefault: "#9CA3AF", // Gray 400
+    primary: "#4F46E5", // Premium Indigo
+    secondary: "#7C3AED", // Violet
+    accent: "#EC4899", // Accent Pink
+    primaryLight: "#EEF2FF", // Soft indigo tint
+    background: "#F8FAFC", // Clean Slate-50 background
+    card: "#FFFFFF", // Crisp White cards
+    text: "#0F172A", // Slate-900 for primary typography
+    textSecondary: "#475569", // Slate-600 for secondary descriptions
+    textMuted: "#64748B", // Slate-500 for captions/details
+    border: "#E2E8F0", // Slate-200 for clean structural borders
+    borderSoft: "#F1F5F9", // Slate-100 for very soft dividers
+    icon: "#64748B", // Icon Slate-500
+    tabIconDefault: "#94A3B8", // Tab default
     tabIconSelected: "#4F46E5",
     
     // Status colors
-    success: "#10B981", // Emerald 500
+    success: "#10B981", // Emerald-500
     successLight: "#D1FAE5",
-    warning: "#F59E0B", // Amber 500
+    warning: "#F59E0B", // Amber-500
     warningLight: "#FEF3C7",
-    danger: "#EF4444", // Red 500
+    danger: "#EF4444", // Red-500
     dangerLight: "#FEE2E2",
     
     // Overdue indicator
@@ -31,39 +31,39 @@ export const Colors = {
     
     // Priorities
     priorityLow: "#10B981",
-    priorityMedium: "#D97706", // Legible Amber
+    priorityMedium: "#D97706",
     priorityHigh: "#EF4444",
     
-    shadow: "#111827",
+    shadow: "#0F172A",
     tint: "#4F46E5",
   },
   dark: {
-    primary: "#818CF8", // Bright Neon Indigo
-    secondary: "#A78BFA", // Lighter Amethyst
-    accent: "#F472B6", // Rose Accent
-    primaryLight: "rgba(129, 140, 248, 0.15)", // Glowing primary overlay
-    background: "#090A1A", // Dark outer space
-    card: "#12142B", // Deep navy-indigo card
-    text: "#F9FAFB", // Pure warm white
-    textSecondary: "#D1D5DB", // Soft gray 300
-    textMuted: "#7C80B0", // High contrast muted violet
-    border: "#2A2E5A", // Semi-transparent bright borders
-    borderSoft: "#1B1E40",
-    icon: "#9CA3AF",
-    tabIconDefault: "#4E5380",
+    primary: "#818CF8", // Indigo-400
+    secondary: "#A78BFA", // Violet-400
+    accent: "#F472B6", // Pink Accent
+    primaryLight: "rgba(129, 140, 248, 0.12)", // Soft glowing tint
+    background: "#0B0F19", // Deep midnight background
+    card: "#151B2C", // Elegant slate-navy card
+    text: "#F8FAFC", // Slate-50 for high-contrast white text
+    textSecondary: "#CBD5E1", // Slate-300 for clean descriptions
+    textMuted: "#94A3B8", // Slate-400 for secondary details
+    border: "#223049", // Slate border for dark card outlines
+    borderSoft: "#1C253B", // Softer border dividers
+    icon: "#94A3B8",
+    tabIconDefault: "#4E5770",
     tabIconSelected: "#818CF8",
     
     // Status colors
-    success: "#10B981",
-    successLight: "rgba(16, 185, 129, 0.15)",
+    success: "#34D399",
+    successLight: "rgba(52, 211, 153, 0.15)",
     warning: "#FBBF24",
-    warningLight: "rgba(245, 158, 11, 0.15)",
+    warningLight: "rgba(251, 191, 36, 0.15)",
     danger: "#F87171",
-    dangerLight: "rgba(239, 68, 68, 0.15)",
+    dangerLight: "rgba(248, 113, 113, 0.15)",
     
     // Overdue indicator
     overdue: "#F87171",
-    overdueLight: "rgba(239, 68, 68, 0.15)",
+    overdueLight: "rgba(248, 113, 113, 0.15)",
     
     // Priorities
     priorityLow: "#34D399",

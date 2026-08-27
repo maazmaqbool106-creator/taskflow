@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(15, 23, 42, 0.4)",
+    backgroundColor: "rgba(11, 15, 25, 0.6)",
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
@@ -330,15 +330,15 @@ const styles = StyleSheet.create({
   },
   cell: {
     width: "14.28%", // 7 columns
-    aspectRatio: 1.1,
+    aspectRatio: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,
+    borderRadius: 20,
     marginVertical: 2,
   },
   cellText: {
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: "600",
   },
   summaryFooter: {
     flexDirection: "row",

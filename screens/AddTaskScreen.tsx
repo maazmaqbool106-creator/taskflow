@@ -42,6 +42,8 @@ export default function AddTaskScreen({ route, navigation }: Props) {
   // Validation state
   const [titleTouched, setTitleTouched] = useState(false);
   const [datePickerVisible, setDatePickerVisible] = useState(false);
+  const [titleFocused, setTitleFocused] = useState(false);
+  const [descFocused, setDescFocused] = useState(false);
 
   // Load task values if in edit mode
   useEffect(() => {
@@ -129,14 +131,22 @@ export default function AddTaskScreen({ route, navigation }: Props) {
               setTitle(text);
               if (!titleTouched) setTitleTouched(true);
             }}
-            onBlur={() => setTitleTouched(true)}
+            onFocus={() => setTitleFocused(true)}
+            onBlur={() => {
+              setTitleFocused(false);
+              setTitleTouched(true);
+            }}
             placeholder="e.g. Complete React Native project"
             placeholderTextColor={colors.textMuted}
             style={[
               styles.input,
               {
                 backgroundColor: colors.card,
-                borderColor: isTitleInvalid ? colors.danger : colors.border,
+                borderColor: isTitleInvalid
+                  ? colors.danger
+                  : titleFocused
+                  ? colors.primary
+                  : colors.border,
                 color: colors.text,
               },
             ]}
@@ -152,6 +162,8 @@ export default function AddTaskScreen({ route, navigation }: Props) {
           <TextInput
             value={description}
             onChangeText={setDescription}
+            onFocus={() => setDescFocused(true)}
+            onBlur={() => setDescFocused(false)}
             placeholder="Add details about this task..."
             placeholderTextColor={colors.textMuted}
             multiline
@@ -162,7 +174,7 @@ export default function AddTaskScreen({ route, navigation }: Props) {
               styles.descriptionInput,
               {
                 backgroundColor: colors.card,
-                borderColor: colors.border,
+                borderColor: descFocused ? colors.primary : colors.border,
                 color: colors.text,
               },
             ]}
@@ -206,15 +218,19 @@ export default function AddTaskScreen({ route, navigation }: Props) {
                   style={[
                     styles.option,
                     {
-                      backgroundColor: isSelected ? colors.primary : colors.card,
+                      backgroundColor: isSelected ? colors.primaryLight : colors.card,
                       borderColor: isSelected ? colors.primary : colors.border,
+                      borderWidth: isSelected ? 1.5 : 1,
                     },
                   ]}
                 >
                   <Text
                     style={[
                       styles.optionText,
-                      { color: isSelected ? "#FFFFFF" : colors.textSecondary },
+                      {
+                        color: isSelected ? colors.primary : colors.textSecondary,
+                        fontWeight: isSelected ? "600" : "500",
+                      },
                     ]}
                   >
                     {item}
@@ -228,9 +244,9 @@ export default function AddTaskScreen({ route, navigation }: Props) {
           <Text style={[styles.label, { color: colors.textSecondary }]}>Priority</Text>
           <View style={styles.priorityRow}>
             {([
-              { key: "low", label: "Low", color: colors.priorityLow },
-              { key: "medium", label: "Medium", color: colors.priorityMedium },
-              { key: "high", label: "High", color: colors.priorityHigh },
+              { key: "low", label: "Low", color: colors.priorityLow, bg: colors.successLight },
+              { key: "medium", label: "Medium", color: colors.priorityMedium, bg: colors.warningLight },
+              { key: "high", label: "High", color: colors.priorityHigh, bg: colors.dangerLight },
             ] as const).map((item) => {
               const isSelected = priority === item.key;
               return (
@@ -240,15 +256,19 @@ export default function AddTaskScreen({ route, navigation }: Props) {
                   style={[
                     styles.priorityOption,
                     {
-                      backgroundColor: isSelected ? item.color : colors.card,
+                      backgroundColor: isSelected ? item.bg : colors.card,
                       borderColor: isSelected ? item.color : colors.border,
+                      borderWidth: isSelected ? 1.5 : 1,
                     },
                   ]}
                 >
                   <Text
                     style={[
                       styles.priorityText,
-                      { color: isSelected ? "#FFFFFF" : colors.textSecondary },
+                      {
+                        color: isSelected ? item.color : colors.textSecondary,
+                        fontWeight: isSelected ? "700" : "600",
+                      },
                     ]}
                   >
                     {item.label.toUpperCase()}
