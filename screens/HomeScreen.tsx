@@ -231,6 +231,24 @@ export default function HomeScreen({ navigation }: Props) {
                 />
               </Pressable>
 
+              {/* Change Password button */}
+              <Pressable
+                onPress={() => navigation.navigate("ChangePassword")}
+                accessibilityLabel="Change password"
+                accessibilityRole="button"
+                style={({ pressed }) => [
+                  styles.themeIconContainer,
+                  { backgroundColor: colors.card, borderColor: colors.border },
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Feather
+                  name="key"
+                  size={18}
+                  color={colors.primary}
+                />
+              </Pressable>
+
               {/* Logout button */}
               <Pressable
                 onPress={handleLogout}

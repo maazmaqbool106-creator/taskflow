@@ -12,11 +12,19 @@ import { useAppTheme } from "../hooks/useAppTheme";
 import ForgotPasswordScreen from "../screens/auth/ForgotPasswordScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import SignupScreen from "../screens/auth/SignupScreen";
+import ResetPasswordScreen from "../screens/auth/ResetPasswordScreen";
+import ChangePasswordScreen from "../screens/auth/ChangePasswordScreen";
 
 export type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   ForgotPassword: undefined;
+  ResetPassword:
+    | {
+        email?: string;
+      }
+    | undefined;
+  ChangePassword: undefined;
 
   MainTabs: undefined;
 
@@ -98,6 +106,10 @@ export default function AppNavigator() {
       <Stack.Screen name="Signup" component={SignupScreen} />
 
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+
+      <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+
+      <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
 
       {/* Main App */}
 

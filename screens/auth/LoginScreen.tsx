@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API from "../../services/api";
@@ -79,128 +80,135 @@ export default function LoginScreen({ navigation }: Props) {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Logo */}
-          <View style={styles.logoContainer}>
-            <View style={[styles.logo, { backgroundColor: colors.primary }]}>
-              <Text style={styles.logoText}>T</Text>
+          <View style={styles.innerContainer}>
+            {/* Logo */}
+            <View style={styles.logoContainer}>
+              <View style={[styles.logo, { backgroundColor: colors.primary }]}>
+                <Text style={styles.logoText}>T</Text>
+              </View>
+
+              <Text style={[styles.appName, { color: colors.text }]}>TaskFlow</Text>
+
+              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                Organize your work. Achieve more.
+              </Text>
             </View>
 
-            <Text style={[styles.appName, { color: colors.text }]}>TaskFlow</Text>
+            {/* Login Card */}
+            <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
+              <Text style={[styles.heading, { color: colors.text }]}>Welcome back</Text>
 
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-              Organize your work. Achieve more.
-            </Text>
-          </View>
+              <Text style={[styles.description, { color: colors.textSecondary }]}>
+                Sign in to continue to your tasks.
+              </Text>
 
-          {/* Login Card */}
-          <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.heading, { color: colors.text }]}>Welcome back</Text>
+              {/* Email */}
+              <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
 
-            <Text style={[styles.description, { color: colors.textSecondary }]}>
-              Sign in to continue to your tasks.
-            </Text>
-
-            {/* Email */}
-            <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
-
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: emailFocused ? colors.primary : colors.border,
-                  color: colors.text,
-                },
-              ]}
-              placeholder="Enter your email"
-              placeholderTextColor={colors.textMuted}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={email}
-              onChangeText={setEmail}
-              editable={!loading}
-              onFocus={() => setEmailFocused(true)}
-              onBlur={() => setEmailFocused(false)}
-            />
-
-            {/* Password Header */}
-            <View style={styles.passwordHeader}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Password</Text>
-
-              <Pressable
-                onPress={() => navigation.navigate("ForgotPassword")}
-                disabled={loading}
-              >
-                <Text style={styles.forgot}>
-                  Forgot password?
-                </Text>
-              </Pressable>
-            </View>
-
-            {/* Password */}
-            <View
-              style={[
-                styles.passwordContainer,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: passwordFocused ? colors.primary : colors.border,
-                },
-              ]}
-            >
               <TextInput
-                style={[styles.passwordInput, { color: colors.text }]}
-                placeholder="Enter your password"
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.card,
+                    borderColor: emailFocused ? colors.primary : colors.border,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="Enter your email"
                 placeholderTextColor={colors.textMuted}
-                secureTextEntry={!showPassword}
-                value={password}
-                onChangeText={setPassword}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                value={email}
+                onChangeText={setEmail}
                 editable={!loading}
-                onFocus={() => setPasswordFocused(true)}
-                onBlur={() => setPasswordFocused(false)}
+                onFocus={() => setEmailFocused(true)}
+                onBlur={() => setEmailFocused(false)}
               />
 
+              {/* Password Header */}
+              <View style={styles.passwordHeader}>
+                <Text style={[styles.label, { color: colors.textSecondary }]}>Password</Text>
+
+                <Pressable
+                  onPress={() => navigation.navigate("ForgotPassword")}
+                  disabled={loading}
+                >
+                  <Text style={styles.forgot}>
+                    Forgot password?
+                  </Text>
+                </Pressable>
+              </View>
+
+              {/* Password */}
+              <View
+                style={[
+                  styles.passwordContainer,
+                  {
+                    backgroundColor: colors.card,
+                    borderColor: passwordFocused ? colors.primary : colors.border,
+                  },
+                ]}
+              >
+                <TextInput
+                  style={[styles.passwordInput, { color: colors.text }]}
+                  placeholder="Enter your password"
+                  placeholderTextColor={colors.textMuted}
+                  secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={setPassword}
+                  editable={!loading}
+                  onFocus={() => setPasswordFocused(true)}
+                  onBlur={() => setPasswordFocused(false)}
+                />
+
+                <Pressable
+                  onPress={() => setShowPassword(!showPassword)}
+                  disabled={loading}
+                  style={styles.eyeIcon}
+                  accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+                  accessibilityRole="button"
+                >
+                  <Feather
+                    name={showPassword ? "eye" : "eye-off"}
+                    size={20}
+                    color={colors.textSecondary}
+                  />
+                </Pressable>
+              </View>
+
+              {/* Login Button */}
               <Pressable
-                onPress={() => setShowPassword(!showPassword)}
+                style={({ pressed }) => [
+                  styles.loginButton,
+                  { backgroundColor: colors.primary },
+                  loading && styles.loginButtonDisabled,
+                  pressed && !loading && { opacity: 0.9, transform: [{ scale: 0.98 }] },
+                ]}
+                onPress={handleLogin}
                 disabled={loading}
               >
-                <Text style={styles.showPassword}>
-                  {showPassword ? "Hide" : "Show"}
+                <Text style={styles.loginButtonText}>
+                  {loading ? "Logging in..." : "Log In"}
                 </Text>
               </Pressable>
-            </View>
 
-            {/* Login Button */}
-            <Pressable
-              style={({ pressed }) => [
-                styles.loginButton,
-                { backgroundColor: colors.primary },
-                loading && styles.loginButtonDisabled,
-                pressed && !loading && { opacity: 0.9, transform: [{ scale: 0.98 }] },
-              ]}
-              onPress={handleLogin}
-              disabled={loading}
-            >
-              <Text style={styles.loginButtonText}>
-                {loading ? "Logging in..." : "Log In"}
-              </Text>
-            </Pressable>
-
-            {/* Signup */}
-            <View style={styles.signupRow}>
-              <Text style={[styles.signupText, { color: colors.textMuted }]}>
-                Don't have an account?
-              </Text>
-
-              <Pressable
-                onPress={() => navigation.navigate("Signup")}
-                disabled={loading}
-              >
-                <Text style={styles.signupLink}>
-                  {" "}
-                  Create account
+              {/* Signup */}
+              <View style={styles.signupRow}>
+                <Text style={[styles.signupText, { color: colors.textMuted }]}>
+                  Don't have an account?
                 </Text>
-              </Pressable>
+
+                <Pressable
+                  onPress={() => navigation.navigate("Signup")}
+                  disabled={loading}
+                >
+                  <Text style={styles.signupLink}>
+                    {" "}
+                    Create account
+                  </Text>
+                </Pressable>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -223,6 +231,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingVertical: 40,
+  },
+
+  innerContainer: {
+    flexGrow: 1,
     justifyContent: "center",
   },
 
@@ -329,10 +341,10 @@ const styles = StyleSheet.create({
     color: "#0F172A",
   },
 
-  showPassword: {
-    color: "#4F46E5",
-    fontWeight: "700",
-    fontSize: 13,
+  eyeIcon: {
+    padding: 4,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   loginButton: {

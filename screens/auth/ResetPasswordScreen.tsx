@@ -12,83 +12,59 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
-
-import API from "../../services/api";
 import { useAppTheme } from "../../hooks/useAppTheme";
 import { validatePassword } from "../../utils/validation";
 
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../navigation/AppNavigator";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Signup">;
+type Props = NativeStackScreenProps<RootStackParamList, "ResetPassword">;
 
-export default function SignupScreen({ navigation }: Props) {
+export default function ResetPasswordScreen({ navigation, route }: Props) {
   const { colors } = useAppTheme();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [age, setAge] = useState("");
-  const [password, setPassword] = useState("");
+  
+  const emailParam = route.params?.email || "";
+  const [email, setEmail] = useState(emailParam);
+  const [code, setCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [nameFocused, setNameFocused] = useState(false);
+  
   const [emailFocused, setEmailFocused] = useState(false);
-  const [ageFocused, setAgeFocused] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [codeFocused, setCodeFocused] = useState(false);
+  const [newPasswordFocused, setNewPasswordFocused] = useState(false);
   const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
 
-  const handleSignup = async () => {
-    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all required fields.");
+  const handleReset = () => {
+    if (!email.trim() || !code.trim() || !newPassword || !confirmPassword) {
+      Alert.alert("Error", "Please fill in all fields.");
       return;
     }
 
-    const pwdValidation = validatePassword(password);
-    if (!pwdValidation.isValid) {
-      Alert.alert("Invalid Password", pwdValidation.message);
+    const validation = validatePassword(newPassword);
+    if (!validation.isValid) {
+      Alert.alert("Weak Password", validation.message);
       return;
     }
 
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match.");
+    if (newPassword !== confirmPassword) {
+      Alert.alert("Error", "New passwords do not match.");
       return;
     }
 
-    try {
-      setLoading(true);
-
-      await API.post("/auth/register", {
-        name: name.trim(),
-        email: email.trim(),
-        age: age ? Number(age) : undefined,
-        password,
-      });
-
-      Alert.alert(
-        "Success",
-        "Account created successfully! Please log in.",
-        [
-          {
-            text: "OK",
-            onPress: () => navigation.navigate("Login"),
-          },
-        ]
-      );
-    } catch (error: any) {
-      console.log(
-        "Signup error:",
-        error.response?.data || error.message
-      );
-
-      Alert.alert(
-        "Signup Failed",
-        error.response?.data?.message ||
-          "Unable to create account. Please try again."
-      );
-    } finally {
+    setLoading(true);
+    // Simulate API request delay
+    setTimeout(() => {
       setLoading(false);
-    }
+      Alert.alert(
+        "Password Reset Success",
+        "Your password has been successfully reset. Please log in with your new password.",
+        [{ text: "OK", onPress: () => navigation.navigate("Login") }]
+      );
+    }, 1000);
   };
 
   return (
@@ -107,6 +83,7 @@ export default function SignupScreen({ navigation }: Props) {
           <Feather name="arrow-left" size={20} color={colors.text} />
         </Pressable>
       </View>
+
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -118,38 +95,19 @@ export default function SignupScreen({ navigation }: Props) {
         >
           <View style={styles.innerContainer}>
             <View style={styles.header}>
-              <Text style={[styles.logo, { backgroundColor: colors.primary }]}>T</Text>
+              <View style={[styles.icon, { backgroundColor: colors.primaryLight }]}>
+                <Feather name="lock" size={28} color={colors.primary} />
+              </View>
 
-              <Text style={[styles.title, { color: colors.text }]}>Create your account</Text>
-
+              <Text style={[styles.title, { color: colors.text }]}>Reset Password</Text>
               <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-                Start organizing your tasks with TaskFlow.
+                Enter your reset details below to set a new password.
               </Text>
             </View>
 
             <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Full Name</Text>
-
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: colors.card,
-                    borderColor: nameFocused ? colors.primary : colors.border,
-                    color: colors.text,
-                  },
-                ]}
-                placeholder="Enter your full name"
-                placeholderTextColor={colors.textMuted}
-                value={name}
-                onChangeText={setName}
-                editable={!loading}
-                onFocus={() => setNameFocused(true)}
-                onBlur={() => setNameFocused(false)}
-              />
-
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
-
+              {/* Email Field */}
+              <Text style={[styles.label, { color: colors.textSecondary }]}>Email Address</Text>
               <TextInput
                 style={[
                   styles.input,
@@ -171,72 +129,72 @@ export default function SignupScreen({ navigation }: Props) {
                 onBlur={() => setEmailFocused(false)}
               />
 
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Age</Text>
-
+              {/* Code Field */}
+              <Text style={[styles.label, { color: colors.textSecondary }]}>Verification Code</Text>
               <TextInput
                 style={[
                   styles.input,
                   {
                     backgroundColor: colors.card,
-                    borderColor: ageFocused ? colors.primary : colors.border,
+                    borderColor: codeFocused ? colors.primary : colors.border,
                     color: colors.text,
                   },
                 ]}
-                placeholder="Enter your age"
+                placeholder="Enter 6-digit code"
                 placeholderTextColor={colors.textMuted}
                 keyboardType="numeric"
-                value={age}
-                onChangeText={setAge}
+                value={code}
+                onChangeText={setCode}
                 editable={!loading}
-                onFocus={() => setAgeFocused(true)}
-                onBlur={() => setAgeFocused(false)}
+                onFocus={() => setCodeFocused(true)}
+                onBlur={() => setCodeFocused(false)}
               />
 
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Password</Text>
-
+              {/* New Password Field */}
+              <Text style={[styles.label, { color: colors.textSecondary }]}>New Password</Text>
               <View
                 style={[
                   styles.passwordContainer,
                   {
                     backgroundColor: colors.card,
-                    borderColor: passwordFocused ? colors.primary : colors.border,
+                    borderColor: newPasswordFocused ? colors.primary : colors.border,
                   },
                 ]}
               >
                 <TextInput
                   style={[styles.passwordInput, { color: colors.text }]}
-                  placeholder="Create a password"
+                  placeholder="Create new password"
                   placeholderTextColor={colors.textMuted}
-                  secureTextEntry={!showPassword}
-                  value={password}
-                  onChangeText={setPassword}
+                  secureTextEntry={!showNewPassword}
+                  value={newPassword}
+                  onChangeText={setNewPassword}
                   editable={!loading}
-                  onFocus={() => setPasswordFocused(true)}
-                  onBlur={() => setPasswordFocused(false)}
+                  onFocus={() => setNewPasswordFocused(true)}
+                  onBlur={() => setNewPasswordFocused(false)}
                 />
                 <Pressable
-                  onPress={() => setShowPassword(!showPassword)}
+                  onPress={() => setShowNewPassword(!showNewPassword)}
                   disabled={loading}
                   style={styles.eyeIcon}
-                  accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+                  accessibilityLabel={showNewPassword ? "Hide password" : "Show password"}
                   accessibilityRole="button"
                 >
                   <Feather
-                    name={showPassword ? "eye" : "eye-off"}
+                    name={showNewPassword ? "eye" : "eye-off"}
                     size={20}
                     color={colors.textSecondary}
                   />
                 </Pressable>
               </View>
 
-              {password.length > 0 && !validatePassword(password).isValid && (
+              {newPassword.length > 0 && !validatePassword(newPassword).isValid && (
                 <Text style={[styles.errorText, { color: colors.danger }]}>
-                  {validatePassword(password).message}
+                  {validatePassword(newPassword).message}
                 </Text>
               )}
 
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Confirm Password</Text>
-
+              {/* Confirm New Password Field */}
+              <Text style={[styles.label, { color: colors.textSecondary }]}>Confirm New Password</Text>
               <View
                 style={[
                   styles.passwordContainer,
@@ -248,7 +206,7 @@ export default function SignupScreen({ navigation }: Props) {
               >
                 <TextInput
                   style={[styles.passwordInput, { color: colors.text }]}
-                  placeholder="Confirm your password"
+                  placeholder="Confirm new password"
                   placeholderTextColor={colors.textMuted}
                   secureTextEntry={!showConfirmPassword}
                   value={confirmPassword}
@@ -274,31 +232,18 @@ export default function SignupScreen({ navigation }: Props) {
 
               <Pressable
                 style={({ pressed }) => [
-                  styles.signupButton,
+                  styles.button,
                   { backgroundColor: colors.primary },
-                  loading && styles.signupButtonDisabled,
+                  loading && styles.disabledButton,
                   pressed && !loading && { opacity: 0.9, transform: [{ scale: 0.98 }] },
                 ]}
-                onPress={handleSignup}
+                onPress={handleReset}
                 disabled={loading}
               >
-                <Text style={styles.signupButtonText}>
-                  {loading ? "Creating..." : "Create Account"}
+                <Text style={styles.buttonText}>
+                  {loading ? "Resetting..." : "Reset Password"}
                 </Text>
               </Pressable>
-
-              <View style={styles.loginRow}>
-                <Text style={[styles.loginText, { color: colors.textMuted }]}>
-                  Already have an account?
-                </Text>
-
-                <Pressable
-                  onPress={() => navigation.navigate("Login")}
-                  disabled={loading}
-                >
-                  <Text style={styles.loginLink}> Log in</Text>
-                </Pressable>
-              </View>
             </View>
           </View>
         </ScrollView>
@@ -310,13 +255,10 @@ export default function SignupScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
   },
-
   flex: {
     flex: 1,
   },
-
   container: {
     flexGrow: 1,
     paddingHorizontal: 24,
@@ -327,108 +269,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
   },
-
-  header: {
-    alignItems: "center",
-    marginBottom: 30,
-  },
-
-  logo: {
-    width: 58,
-    height: 58,
-    borderRadius: 16,
-    backgroundColor: "#4F46E5",
-    color: "#FFFFFF",
-    fontSize: 28,
-    fontWeight: "800",
-    textAlign: "center",
-    textAlignVertical: "center",
-    marginBottom: 18,
-  },
-
-  title: {
-    fontSize: 27,
-    fontWeight: "800",
-    color: "#0F172A",
-    textAlign: "center",
-  },
-
-  subtitle: {
-    marginTop: 7,
-    fontSize: 14,
-    color: "#64748B",
-    textAlign: "center",
-  },
-
-  form: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    padding: 22,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
-
-  label: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#334155",
-    marginBottom: 8,
-  },
-
-  input: {
-    height: 52,
-    borderWidth: 1,
-    borderColor: "#CBD5E1",
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    fontSize: 15,
-    color: "#0F172A",
-    marginBottom: 18,
-    backgroundColor: "#FFFFFF",
-  },
-
-  signupButton: {
-    height: 54,
-    borderRadius: 14,
-    backgroundColor: "#4F46E5",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 6,
-  },
-
-  signupButtonDisabled: {
-    opacity: 0.6,
-  },
-
-  signupButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "800",
-  },
-
-  loginRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 24,
-  },
-
-  loginText: {
-    color: "#64748B",
-    fontSize: 14,
-  },
-
-  loginLink: {
-    color: "#4F46E5",
-    fontSize: 14,
-    fontWeight: "800",
-  },
-
   backButtonContainer: {
     paddingHorizontal: 24,
     paddingTop: 16,
     paddingBottom: 4,
   },
-
   backArrow: {
     width: 40,
     height: 40,
@@ -437,11 +282,50 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
+  header: {
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  icon: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 27,
+    fontWeight: "800",
+    textAlign: "center",
+  },
+  subtitle: {
+    marginTop: 7,
+    fontSize: 14,
+    textAlign: "center",
+    maxWidth: 300,
+  },
+  form: {
+    borderRadius: 24,
+    padding: 22,
+    borderWidth: 1,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: "700",
+    marginBottom: 8,
+  },
+  input: {
+    height: 52,
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    fontSize: 15,
+    marginBottom: 18,
+  },
   passwordContainer: {
     height: 52,
     borderWidth: 1,
-    borderColor: "#CBD5E1",
     borderRadius: 14,
     flexDirection: "row",
     alignItems: "center",
@@ -449,23 +333,34 @@ const styles = StyleSheet.create({
     paddingRight: 14,
     marginBottom: 18,
   },
-
   passwordInput: {
     flex: 1,
     fontSize: 15,
-    color: "#0F172A",
   },
-
   eyeIcon: {
     padding: 4,
     justifyContent: "center",
     alignItems: "center",
   },
-
   errorText: {
     fontSize: 12,
     marginTop: -12,
     marginBottom: 14,
     fontWeight: "600",
+  },
+  button: {
+    height: 54,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 6,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "800",
   },
 });

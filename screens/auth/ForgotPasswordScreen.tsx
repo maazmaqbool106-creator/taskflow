@@ -4,13 +4,14 @@ import {
     KeyboardAvoidingView,
     Platform,
     Pressable,
-    SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
     TextInput,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Feather } from "@expo/vector-icons";
 
 import { useAppTheme } from "../../hooks/useAppTheme";
 
@@ -33,12 +34,26 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
     Alert.alert(
       "Reset Link Sent",
       "We have sent a password reset link to your email address.",
-      [{ text: "OK", onPress: () => navigation.navigate("Login") }]
+      [{ text: "OK", onPress: () => navigation.navigate("ResetPassword", { email: email.trim() }) }]
     );
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={["top", "bottom"]}>
+      <View style={styles.backButtonContainer}>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={({ pressed }) => [
+            styles.backArrow,
+            { backgroundColor: colors.card, borderColor: colors.border },
+            pressed && { opacity: 0.8 },
+          ]}
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
+        >
+          <Feather name="arrow-left" size={20} color={colors.text} />
+        </Pressable>
+      </View>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -47,57 +62,59 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
           contentContainerStyle={styles.container}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.header}>
-            <View style={[styles.icon, { backgroundColor: colors.primaryLight }]}>
-              <Text style={[styles.iconText, { color: colors.primary }]}>?</Text>
+          <View style={styles.innerContainer}>
+            <View style={styles.header}>
+              <View style={[styles.icon, { backgroundColor: colors.primaryLight }]}>
+                <Text style={[styles.iconText, { color: colors.primary }]}>?</Text>
+              </View>
+
+              <Text style={[styles.title, { color: colors.text }]}>Forgot password?</Text>
+
+              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                Enter your email address and we'll help you reset your password.
+              </Text>
             </View>
 
-            <Text style={[styles.title, { color: colors.text }]}>Forgot password?</Text>
+            <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
+              <Text style={[styles.label, { color: colors.textSecondary }]}>Email Address</Text>
 
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-              Enter your email address and we'll help you reset your password.
-            </Text>
-          </View>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.card,
+                    borderColor: emailFocused ? colors.primary : colors.border,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="Enter your email"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+                onFocus={() => setEmailFocused(true)}
+                onBlur={() => setEmailFocused(false)}
+              />
 
-          <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>Email Address</Text>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.button,
+                  { backgroundColor: colors.primary },
+                  pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
+                ]}
+                onPress={handleReset}
+              >
+                <Text style={styles.buttonText}>Send Reset Link</Text>
+              </Pressable>
 
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: emailFocused ? colors.primary : colors.border,
-                  color: colors.text,
-                },
-              ]}
-              placeholder="Enter your email"
-              placeholderTextColor={colors.textMuted}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={email}
-              onChangeText={setEmail}
-              onFocus={() => setEmailFocused(true)}
-              onBlur={() => setEmailFocused(false)}
-            />
-
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                { backgroundColor: colors.primary },
-                pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
-              ]}
-              onPress={handleReset}
-            >
-              <Text style={styles.buttonText}>Send Reset Link</Text>
-            </Pressable>
-
-            <Pressable
-              style={styles.backButton}
-              onPress={() => navigation.navigate("Login")}
-            >
-              <Text style={[styles.backText, { color: colors.primary }]}>← Back to Login</Text>
-            </Pressable>
+              <Pressable
+                style={styles.backButton}
+                onPress={() => navigation.navigate("Login")}
+              >
+                <Text style={[styles.backText, { color: colors.primary }]}>← Back to Login</Text>
+              </Pressable>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -119,6 +136,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingVertical: 40,
+  },
+
+  innerContainer: {
+    flexGrow: 1,
     justifyContent: "center",
   },
 
@@ -208,5 +229,20 @@ const styles = StyleSheet.create({
     color: "#4F46E5",
     fontSize: 14,
     fontWeight: "700",
+  },
+
+  backButtonContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 4,
+  },
+
+  backArrow: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    borderWidth: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -61,19 +61,20 @@ export default function DetailsScreen({ route, navigation }: Props) {
           iconColor: colors.priorityHigh,
           border: isDark ? "rgba(248, 113, 113, 0.2)" : "rgba(239, 68, 68, 0.15)",
         };
-      case "medium":
-        return {
-          bg: colors.warningLight,
-          text: colors.priorityMedium,
-          iconColor: colors.priorityMedium,
-          border: isDark ? "rgba(251, 191, 36, 0.2)" : "rgba(217, 119, 6, 0.15)",
-        };
       case "low":
         return {
           bg: colors.successLight,
           text: colors.priorityLow,
           iconColor: colors.priorityLow,
           border: isDark ? "rgba(52, 211, 153, 0.2)" : "rgba(16, 185, 129, 0.15)",
+        };
+      case "medium":
+      default:
+        return {
+          bg: colors.warningLight,
+          text: colors.priorityMedium,
+          iconColor: colors.priorityMedium,
+          border: isDark ? "rgba(251, 191, 36, 0.2)" : "rgba(217, 119, 6, 0.15)",
         };
     }
   };

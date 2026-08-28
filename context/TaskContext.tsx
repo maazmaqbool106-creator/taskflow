@@ -32,7 +32,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       const response = await API.get("/tasks");
 
       const formattedTasks = response.data.map((task: any) => ({
-        id: task._id,
+        id: task._id || task.id || "",
         title: task.title,
         description: task.description || "",
         completed: task.completed || false,
@@ -67,7 +67,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         const task = response.data;
 
         const newTask: Task = {
-          id: task._id,
+          id: task._id || task.id || "",
           title: task.title,
           description: task.description || "",
           completed: task.completed || false,
@@ -98,7 +98,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         const task = response.data;
 
         const updatedTask: Task = {
-          id: task._id,
+          id: task._id || task.id || "",
           title: task.title,
           description: task.description || "",
           completed: task.completed || false,
